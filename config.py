@@ -10,6 +10,9 @@ if USER == "MY_USERNAME":  # Replace with your actual username
 if USER == "JVARGH7":
     PATH_KIOSK_USER_PATTERNS_FOLDER = Path("C:/Cloud/OneDrive - Emory University/Papers/Pursuant User Profiles")
     PATH_KIOSK_USER_PATTERNS_REPO = Path("C:/code/external/kiosk_user_patterns")
+    PATH_DATA_SHARING_FOLDER = Path("C:/Cloud/OneDrive - Emory University/Data Sharing")
+    PATH_C_DEWEY_FOLDER = Path("C:/DEWEY")
+    PATH_H_DEWEY_FOLDER = Path("H:/DEWEY")  # H: drive path for Pursuant User Profiles
     # test
 if USER == "carolinechizak":  # Replace with your actual username
     PATH_KIOSK_USER_PATTERNS_FOLDER = Path("/Users/carolinechizak/Library/CloudStorage/OneDrive-SharedLibraries-Emory/Varghese, Jithin Sam - Pursuant User Profiles")  # Set your path here
