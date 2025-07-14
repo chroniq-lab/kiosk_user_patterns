@@ -7,7 +7,13 @@ path_nhanes_ckm_newdm = "C:/Cloud/OneDrive - Emory University/Papers/NHANES Subt
 source("C:/code/external/nhanes_ckm/functions/combine_nhanes.R")
 years_to_load <- c("2017Mar2020","20212023")
 
-combined_nhanes <- combine_nhanes(path_nhanes_ckm_folder, years_to_load) %>%
+pre_filtered <- combine_nhanes(path_nhanes_ckm_folder, years_to_load)
+
+write_csv(pre_filtered,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_pre filtering nhanes data.csv"))
+saveRDS(pre_filtered,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_pre filtering nhanes data.RDS"))
+
+
+combined_nhanes <- pre_filtered %>%
   dplyr::filter(age >= 20,(pregnant %in% c(2,3) | is.na(pregnant))) %>%  
   dplyr::mutate(
     sbp = rowMeans(select(., systolic1, systolic2, systolic3), na.rm = TRUE),  # Calculate mean systolic blood pressure
@@ -51,3 +57,8 @@ combined_nhanes <- combine_nhanes(path_nhanes_ckm_folder, years_to_load) %>%
 
 write_csv(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.csv"))
 saveRDS(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.RDS"))
+
+combined_nhanes = readRDS(paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.RDS"))
+
+table(combined_nhanes$race
+      )
