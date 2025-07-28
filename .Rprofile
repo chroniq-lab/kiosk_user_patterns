@@ -6,10 +6,15 @@ library(lubridate)
 if(Sys.info()["user"]=="JVARGH7"){
   path_kiosk_user_patterns_folder <- "C:/Cloud/OneDrive - Emory University/Papers/Pursuant User Profiles"
   path_kiosk_user_patterns_repo <- "C:/code/external/kiosk_user_patterns"
+  
+  
   path_c_dewey_data_folder <- "C:/Cloud/OneDrive - Emory University/Data Sharing/DEWEY"
   path_brfss_parquet_folder <- "C:/Cloud/OneDrive - Emory University/Data Sharing/BRFSS"
   path_ssd_advan_folder <- "E:/Advan Research"
-
+  path_exploratory_kiosks_folder <- "C:/Cloud/OneDrive - Emory University/Data Sharing/Pursuant Internal"
+  
+  
+  
 }
 
 # Insert your username here after running Sys.info() to find it
