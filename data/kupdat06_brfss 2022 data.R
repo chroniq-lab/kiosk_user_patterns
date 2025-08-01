@@ -1,19 +1,20 @@
-rm(list=ls());gc();source(".Rprofile")
+# rm(list=ls());gc();source(".Rprofile")
 
 
 # "_RACE1": Race/ethnicity
 # "_RACEPR1": Race
 # "_HISPANC": Hispanic
 
-brfss2022 = open_dataset(paste0(path_brfss_parquet_folder, "/year=2022/"), format = "parquet") %>%
+
+brfss2022 = open_dataset(paste0(path_brfss_parquet_folder, "/data/year=2022/"), format = "parquet") %>%
   dplyr::select(state, year, one_of("_PSU", "_STSTR", "_LLCPWT",
-  "PREGNANT", "WEIGHT2", "HEIGHT3", "WTKG3", "HTM4", "_BMI5", "_BMI5CAT",
-  "_SEX", "_AGEG5YR", "_AGE65YR", "_AGE80", "_RACE1","_RACEPR1", "_HISPANC",
-  "MARITAL", "EDUCA", "INCOME3", "_HLTHPLN")) %>%
+                                    "PREGNANT", "WEIGHT2", "HEIGHT3", "WTKG3", "HTM4", "_BMI5", "_BMI5CAT",
+                                    "_SEX", "_AGEG5YR", "_AGE65YR", "_AGE80", "_RACE1","_RACEPR1", "_HISPANC",
+                                    "MARITAL", "EDUCA", "INCOME3", "_HLTHPLN","_URBSTAT","DIABETE4")) %>%
   dplyr::rename(PSU = "_PSU",
                 STSTR = "_STSTR",
                 LLCPWT = "_LLCPWT")  |>
-    mutate(
+  mutate(
     state_names = case_when(
       state == 1 ~ "Alabama",
       state == 2 ~ "Alaska",
@@ -70,14 +71,21 @@ brfss2022 = open_dataset(paste0(path_brfss_parquet_folder, "/year=2022/"), forma
       state == 72 ~ "Puerto Rico",
       state == 78 ~ "Virgin Islands",
       TRUE ~ NA_character_),
-
+    
+    urban = case_when(
+      
+      `_URBSTAT` == 1 ~ "urban",
+      `_URBSTAT` == 2 ~ "rural",
+      TRUE ~ NA_character_
+    ),
+    
     sex = case_when( 
       `_SEX` == 1 ~ "Male",
       `_SEX` == 2 ~ "Female"),
     hispanic = case_when(
-        `_HISPANC` == 1 ~ "Hispanic",
-        `_HISPANC` == 2 ~ "Non-Hispanic",
-        `_HISPANC` == 9 ~ "Non-Hispanic", # Don't know/Refused/Missing
+      `_HISPANC` == 1 ~ "Hispanic",
+      `_HISPANC` == 2 ~ "Non-Hispanic",
+      `_HISPANC` == 9 ~ "Non-Hispanic", # Don't know/Refused/Missing
       TRUE ~ NA_character_
     ),
     raceeth = case_when(
@@ -90,62 +98,48 @@ brfss2022 = open_dataset(paste0(path_brfss_parquet_folder, "/year=2022/"), forma
     ),
     height_cm = HTM4/100,
     weight_kg = WTKG3/100,
+    bmi = `_BMI5`/100,
     bmi_category = case_when(
-        `_BMI5CAT` == 1 ~ "Underweight",
-        `_BMI5CAT` == 2 ~ "Normal weight",
-        `_BMI5CAT` == 3 ~ "Overweight",
-        `_BMI5CAT` == 4 ~ "Obese",
-        `_BMI5CAT` == 5 ~ "Missing",
-        TRUE ~ NA_character_
+      `_BMI5CAT` == 1 ~ "Underweight",
+      `_BMI5CAT` == 2 ~ "Normal weight",
+      `_BMI5CAT` == 3 ~ "Overweight",
+      `_BMI5CAT` == 4 ~ "Obese",
+      `_BMI5CAT` == 5 ~ "Missing",
+      TRUE ~ NA_character_
     ),
-
+    
+    overweight = case_when(`_BMI5CAT` == 3 ~ 1,
+                           `_BMI5CAT` %in% c(1,2,4) ~ 0,
+                           TRUE ~ NA_real_),
+    
+    obesity = case_when(`_BMI5CAT` == 4 ~ 1,
+                           `_BMI5CAT` %in% c(1,2,3) ~ 0,
+                           TRUE ~ NA_real_),
+    
     age_group = case_when(
       `_AGEG5YR` %in% sprintf("%02d", 1:5) ~ "18-44",
       `_AGEG5YR` %in% sprintf("%02d", 6:9) ~ "45-64", 
       `_AGEG5YR` %in% sprintf("%02d", 10:13) ~ "65plus",
       `_AGEG5YR` %in% 14 ~ NA_character_,
       TRUE ~ NA_character_
-    )) %>%
-dplyr::filter(!is.na(age_group)) %>%
-dplyr::filter(!is.na(age_group)) %>% 
-dplyr::filter(sex == "Male" |(sex == "Female" & PREGNANT %in% c(2,7,9))) %>%
-dplyr::filter(state != 66 & state != 72 & state != 78) %>%
-collect()
+    ),
+    diagnosed_dm = case_when(DIABETE4 == 1 ~ 1,
+                             DIABETE4 %in% c(2:7) ~ 0,
+                             TRUE ~ NA_real_)
+    
+    
+    ) %>%
+  collect() %>% 
+  mutate(age_group_pursuant = case_when(
+           `_AGE80` %in% c(18:19) ~ "18-19",
+           `_AGE80` >= 20 & `_AGE80` < 45 ~ "20-44", 
+           `_AGE80` >= 45 & `_AGE80` < 65 ~ "45-64", 
+           `_AGE80` >= 65  ~ "65plus",
+           TRUE ~ NA_character_
+         ))
 
 
-library(srvyr)
-options(survey.lonely.psu = "adjust")
-brfss2022_svy <- brfss2022 %>% 
-  as_survey_design(.data = .,
-                   ids = PSU,
-                   strata = STSTR,
-                   weights = LLCPWT, 
-                   nest = TRUE, 
-                   ps = "brewer",variance = "YG")
 
+nrow(brfss2022 %>%
+       dplyr::filter(`_AGE80` >= 18, (PREGNANT %in% c(2,7,9) | is.na(PREGNANT))))
 
-# Method 2 using srvyr
-state_estimates_m2 = brfss2022_svy %>%
-  group_by(state, state_names, bmi_category) %>%
-  summarise(
-    n = survey_total(),
-    unwt_freq = unweighted(n()),
-    prop = survey_prop(vartype="ci"),
-    .groups = "drop") %>%
-  ungroup()
-View(state_estimates_m2)
-
-
-# Method 3 of https://github.com/chroniq-lab/tutorials/blob/main/NHANES/tutnha03_descriptive%20characteristics.R
-# source("C:/code/external/functions/survey/svysummary.R")
-
-source("https://raw.githubusercontent.com/jvargh7/functions/main/survey/svysummary.R")
-
-
-state_estimates_m3 = svysummary(
-  brfss2022_svy,
-  g_vars=c("age_group","bmi_category"),
-  id_vars=c("state","state_names"))
-
-View(state_estimates_m3)
-write_csv(state_estimates_m3,"analysis/kupana01_brfss state estimates.csv")

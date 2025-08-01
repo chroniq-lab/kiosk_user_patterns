@@ -2,10 +2,12 @@ rm(list=ls());gc();source(".Rprofile")
 
 
 kupdat07 = open_dataset(paste0(path_kiosk_user_patterns_folder, "/working/processed/kupdat07_pursuant data"), 
-                format = "parquet", partitioning = c("year", "month")) %>% 
-  dplyr::filter(age %in% c(18:99),!is.na(gender), !is.na(ethnicity_updated),year>=2024) %>% 
+                                             format = "parquet", partitioning = c("year", "month")) %>% 
+  dplyr::filter(age %in% c(18:99),year>=2024,!is.na(gender), !is.na(ethnicity_updated)) %>% 
   collect() %>% 
   distinct(session_id_mask, .keep_all = TRUE) 
+
+
 
 
 
