@@ -2,13 +2,15 @@ library(dplyr)
 library(survey)
 
 # STEP 1: Read analytic dataset
-file_path <- "/Users/carolinechizak/Library/CloudStorage/OneDrive-SharedLibraries-Emory/Varghese, Jithin Sam - Pursuant User Profiles/working/processed/kupdat05_nhanes data.rds"
-nhanes <- readRDS(file_path)
+file_path <- "/Users/carolinechizak/Library/CloudStorage/OneDrive-SharedLibraries-Emory/Varghese, Jithin Sam - Pursuant User Profiles/working/processed/kupdat05_nhanes data.csv"
+nhanes <- read.csv(file_path)
 
-# STEP 2: Exclude pregnant, recode variables, create grouping vars
+# STEP 2: Filter to only NHANES 2021–2023
+nhanes <- nhanes %>% filter(year == "20212023")
+
+# STEP 3: Exclude pregnant, recode variables, create grouping vars
 nhanes <- nhanes %>%
   mutate(
-    pregnant_num = as.numeric(as.character(pregnant)),
     sex = if_else(female == 1, "Women", "Men"),
     age_cat = cut(age, breaks = c(17, 44, 64, Inf), labels = c("18-44", "45-64", "65 and above")),
     race_cat = case_when(
@@ -22,12 +24,12 @@ nhanes <- nhanes %>%
     obesity    = factor(if_else(bmi >= 30, 1, 0), levels = c(0, 1))
   ) %>%
   filter(
-    !is.na(age), !is.na(female), !is.na(race), !is.na(dm_self_reported),
-    !is.na(height), !is.na(weight), !is.na(bmi),
-    is.na(pregnant_num) | pregnant_num == 0
+    age >= 18,
+    is.na(pregnant) | pregnant != 1,
+    !is.na(female), !is.na(race), !is.na(height), !is.na(weight), !is.na(bmi)
   )
 
-# STEP 3: Create survey design object
+# STEP 4: Create survey design object
 nhanes_design <- svydesign(
   ids = ~psu,
   strata = ~pseudostratum,
@@ -36,7 +38,7 @@ nhanes_design <- svydesign(
   nest = TRUE
 )
 
-# STEP 4: Prevalence helper
+# STEP 5: Prevalence helper
 get_prev <- function(var, design, subset = NULL) {
   if (!is.null(subset)) {
     design <- subset(design, subset)
