@@ -174,28 +174,3 @@ national_estimates = svysummary(
  write_csv(national_estimates, file = paste0(path_kup_hyperc3_folder,"/working/kuphyc301_brfss national estimates.csv"))
 
  print("National estimates completed")
-# STRATIFIED ESTIMATES ----------------
-
-
-stratified_estimates = map_dfr(c("age_group_pursuant","sex","raceeth","urban","state_names"),
-                               
-                               function(v){
-                                 print(v)
-                                 se_df = svysummary(
-                                   brfss2022_svy,
-                                   p_vars = c("overweight","obesity"),
-                                   id_vars=v) %>% 
-                                    mutate(Stratification = v) %>% 
-                                    dplyr::rename(strata = v)
-                                 
-                                 return(se_df)
-                                 
-                                 
-                               }
-                               
-                               )
-
-
-
- write_csv(stratified_estimates, file = paste0(path_kup_hyperc3_folder,"/working/kuphyc301_brfss stratified estimates of overweight and obesity.csv"))
-

@@ -1,6 +1,8 @@
 
-cosmos = read_csv("data/kupdat08_cosmos county estimates.csv") %>% 
-  distinct(fips,.keep_all=TRUE)
+cosmos = read_csv("data/kupdat08_cosmos counties.csv") %>% 
+  distinct(fips,.keep_all=TRUE) %>% 
+  rename(Obesity = bmi_ge30,
+         Overweight = bmi_25to30)
 
 places = read_csv("data/kupdat09_places county estimates.csv") %>% 
   mutate(obesity_se = (obesity - obesity_lci)/1.96)

@@ -2,8 +2,10 @@ rm(list=ls());gc();source(".Rprofile")
 
 
 
-cosmos = read_csv("data/kupdat08_cosmos state stratified estimates.csv") %>% 
-  dplyr::filter(strata_new == "total")
+cosmos = read_csv("data/kupdat08_cosmos states.csv")  %>% 
+  rename(obesity = bmi_ge30,
+         overweight = bmi_25to30)
+
 
 brfss = read_csv("hyperc3/kuphyc302_brfss stratified estimates of overweight and obesity in parallel.csv") %>% 
   dplyr::filter(Stratification == "state_names") %>% 

@@ -80,25 +80,46 @@ mutate(prevalence_95ci = paste0(prevalence, " (",round(prevalence_lci,2),", ",ro
 
 
 
-kupdat08 = read_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat08_cosmos state stratified estimates.csv")) %>% 
-  dplyr::filter(State == "United States of America",!Stratification %in% c("age_group","sex","sex_gender")) %>% 
-  mutate(variable = case_when(Stratification == "race_ethnicity" ~ "race",
+kupdat08 = read_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat08_cosmos stratified.csv")) %>% 
+  dplyr::filter(Stratification %in% c("age_group_pursuant","legalsex","raceeth","urban")) %>% 
+  mutate(variable = case_when(Stratification == "raceeth" ~ "race",
                               Stratification == "legalsex" ~ "female",
                               TRUE ~ Stratification),
-         group = case_when(strata_new == "asian" ~ "NH Asian",
-                           strata_new == "other" ~ "NH Other",
-                           strata_new == "black" ~"NH Black",
-                           strata_new == "hispanic" ~ "Hispanic",
-                           strata_new == "white" ~ "NH White",
-                           Stratification == "legalsex" & strata_new == "female" ~ "1",
-                           Stratification == "legalsex" & strata_new == "male" ~ "0",
-                           Stratification == "legalsex" & strata_new == "unknown_sex" ~ NA_character_,
-                           Stratification == "urban" & strata_new == "urban" ~ "1",
-                           Stratification == "urban" & strata_new == "rural" ~ "0",
-                           TRUE ~ strata_new)) %>% 
-  dplyr::select(variable, group, overweight, obesity, NcountBMI) %>% 
+         group = case_when(strata == "Less than 18" ~ "<18",
+                           strata == "18 or more and less than 20" ~ "18-19",
+                           strata == "20 or more and less than 45" ~ "20-44",
+                           strata == "45 or more and less than 65" ~ "45-64",
+                           strata == "65 or more" ~ "65+",
+                           
+                           Stratification == "legalsex" & strata == "Female" ~ "1",
+                           Stratification == "legalsex" & strata == "Male" ~ "0",
+                           Stratification == "legalsex"  ~ "unknown_sex",
+                           
+                           
+                           Stratification == "raceeth" & strata2 == "Hispanic or Latino" ~ "Hispanic",
+                           Stratification == "raceeth" &  strata == "White" ~ "NH White",
+                           Stratification == "raceeth" & strata == "Black or African American" ~"NH Black",
+                           Stratification == "raceeth" & strata == "Asian" ~ "NH Asian",
+                           Stratification == "raceeth" & strata == "American Indian or Alaska Native" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "Native Hawaiian or Other Pacific Islander" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "Other Race" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "None of the above" ~ "NH Other",
+                           
+                           Stratification == "urban" & strata == "10 Rural areas" ~ "0",
+                           Stratification == "urban" & strata == "None of the above" ~ "unknown_urban",
+                           Stratification == "urban" ~ "1",
+                           TRUE ~ strata)) %>% 
+  rename(obesity = bmi_ge30,
+         overweight = bmi_25to30) %>% 
+  group_by(variable,group) %>% 
+  summarize(overweight = sum(overweight*n)/sum(n),
+            obesity = sum(obesity*n)/sum(n),
+            n = sum(n)) %>% 
+  dplyr::select(variable, group, overweight, obesity,n) %>% 
   mutate(across(overweight:obesity, ~ round(., 1))) %>%
-  dplyr::rename(cosmos_overweight = overweight, cosmos_obesity = obesity)
+  dplyr::rename(cosmos_overweight = overweight, 
+                cosmos_obesity = obesity,
+                cosmos_n = n)
 
 
 

@@ -38,5 +38,15 @@ df = lmoran_places_ob %>%
 
 
 
-with(df,table(places_ob_quad_median,cosmos_ob_quad_median))
-with(df,table(places_ob_quad_median,pursuant_ob_quad_median))
+with(df,table(places_ob_quad_median,cosmos_ob_quad_median)) %>% 
+  as_tibble() %>% 
+  pivot_wider(names_from=cosmos_ob_quad_median,values_from=n) %>% 
+  write_csv("paper/table_moral i_cosmos.csv")
+with(df,table(places_ob_quad_median,pursuant_ob_quad_median)) %>% 
+  as_tibble() %>% 
+  pivot_wider(names_from=pursuant_ob_quad_median,values_from=n) %>% 
+  write_csv("paper/table_moral i_pursuant.csv")
+
+
+
+

@@ -80,21 +80,3 @@ ggarrange(fig3a,
          width = 8,height = 8)
 
 
-# SUPPLEMENTARY FIGURE 4 -----------------
-
-sfig4a = plot_map_estimates(df,level="county",plot_var = "places_ob_se",fips_var = "fips",plot_var_label="",min=0,max=10,breaks=seq(0,10,by=2),palette = "YlOrRd") + 
-  figure2_theme
-sfig4b = plot_map_estimates(df,level="county",plot_var = "pursuant_ow_se",fips_var = "fips",plot_var_label="",min=0,max=10,breaks=seq(0,10,by=2),palette = "YlOrRd")+ 
-  figure2_theme
-sfig4c = plot_map_estimates(df,level="county",plot_var = "pursuant_ob_se",fips_var = "fips",plot_var_label="",min=0,max=10,breaks=seq(0,10,by=2),palette = "YlOrRd")+ 
-  figure2_theme
-
-
-
-ggarrange(sfig4a,sfig4b,sfig4c,
-          nrow = 1, ncol = 3,
-          labels=LETTERS[1:3],
-          common.legend = TRUE,
-          legend="bottom") %>% 
-  ggsave(.,filename=paste0(path_kiosk_user_patterns_folder,"/figures/qc/figure_2_county standard errors of overweight and obesity.jpg"),
-         width = 12,height = 3)

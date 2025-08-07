@@ -1,24 +1,39 @@
 rm(list=ls());gc();source(".Rprofile")
 
-read_csv("C:/code/external/kinetic-t2d/data/ktdat06_cosmos county estimates.csv") %>% 
-  dplyr::select(Start,Stop, fips, County_StateAbb, County, StateAbb, Obesity, Overweight, Ncount) %>%
-  write_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat08_cosmos county estimates.csv"))
+source("C:/code/external/kinetic-t2d/functions/cosmos_fips.R")
+
+counties = readxl::read_xlsx(paste0(path_kiosk_user_patterns_folder,"/working/raw/Cosmos/Cosmos Table Harmonized.xlsx"),sheet="county") %>% 
+  dplyr::filter(Stratification == "county") %>% 
+  cosmos_fips(.,var_name="strata",region = "county") %>% 
+  dplyr::filter(!County_StateAbb %in% c("None of the above")) %>% 
+  mutate(bmi_30to35 = bmi_ge30 - rowSums(.[,c("bmi_35to40","bmi_ge40")],na.rm=TRUE),
+         bmi_185to25 = case_when(is.na(bmi_ge30) & is.na(bmi_lt185) & is.na(bmi_25to30)  ~ NA_real_,
+                                 TRUE ~ 100 - rowSums(.[,c("bmi_ge30","bmi_lt185","bmi_25to30")],na.rm=TRUE)),
+         n = case_when(n == "10 or fewer" ~ NA_real_,
+                       TRUE ~ as.numeric(n)))
+
+write_csv(counties, "data/kupdat08_cosmos counties.csv")
 
 
-state_stratified = read_csv("C:/code/external/kinetic-t2d/data/ktdat06_cosmos state stratified estimates.csv") %>% 
-    dplyr::filter(!is.na(state_fips))  %>% 
-    dplyr::filter(!strata_new %in% c("0-4","5-18"))
-    
-state_stratified %>% 
-    bind_rows(.,
-        {.} %>% 
-    group_by(Start,Stop, strata_new, Stratification) %>% 
-    summarize(obesity = sum(obesity*NcountBMI,na.rm=TRUE)/sum(NcountBMI,na.rm=TRUE),
-    
-                overweight = sum(overweight*NcountBMI,na.rm=TRUE)/sum(NcountBMI,na.rm=TRUE),
-                NcountBMI = sum(NcountBMI,na.rm=TRUE)) %>%
-    mutate(state_fips = NA_character_,
-    State = "United States of America")
-    ) %>% 
-    write_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat08_cosmos state stratified estimates.csv"))
+states = readxl::read_xlsx(paste0(path_kiosk_user_patterns_folder,"/working/raw/Cosmos/Cosmos Table Harmonized.xlsx"),sheet="other") %>% 
+  dplyr::filter(Stratification == "state_name") %>% 
+  cosmos_fips(.,var_name="strata",region = "state") %>% 
+  dplyr::filter(!State %in% c("None of the above")) %>% 
+  mutate(bmi_35to40 = bmi_ge30 - rowSums(.[,c("bmi_30to35","bmi_ge40")],na.rm=TRUE),
+         bmi_185to25 = case_when(is.na(bmi_ge30) & is.na(bmi_lt185) & is.na(bmi_25to30)  ~ NA_real_,
+                                 TRUE ~ 100 - rowSums(.[,c("bmi_ge30","bmi_lt185","bmi_25to30")],na.rm=TRUE)),
+         n = case_when(n == "10 or fewer" ~ NA_real_,
+                       TRUE ~ as.numeric(n)))
 
+write_csv(states, "data/kupdat08_cosmos states.csv")
+
+
+
+stratified = readxl::read_xlsx(paste0(path_kiosk_user_patterns_folder,"/working/raw/Cosmos/Cosmos Table Harmonized.xlsx"),sheet="other") %>% 
+  dplyr::filter(!Stratification == "state_name") %>% 
+  mutate(bmi_35to40 = bmi_ge30 - rowSums(.[,c("bmi_30to35","bmi_ge40")],na.rm=TRUE),
+         bmi_185to25 = case_when(is.na(bmi_ge30) & is.na(bmi_lt185) & is.na(bmi_25to30)  ~ NA_real_,
+                                 TRUE ~ 100 - rowSums(.[,c("bmi_ge30","bmi_lt185","bmi_25to30")],na.rm=TRUE)),
+         n = case_when(n == "10 or fewer" ~ NA_real_,
+                       TRUE ~ as.numeric(n))) 
+write_csv(stratified, "data/kupdat08_cosmos stratified.csv")
