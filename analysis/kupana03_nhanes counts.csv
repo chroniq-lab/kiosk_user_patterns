@@ -1,0 +1,12 @@
+n,overweight,obesity,stratification,strata
+6194,NA,NA,national,NA
+2817,NA,0.37628682996095136,female,0
+3377,NA,NA,female,1
+265,0.1660377358490566,0.26037735849056604,age_group_pursuant,18-19
+1939,NA,0.3806085611139763,age_group_pursuant,20-44
+2021,NA,0.46264225630875805,age_group_pursuant,45-64
+1969,NA,NA,age_group_pursuant,65+
+1066,NA,0.4277673545966229,race,Hispanic
+3620,NA,0.40193370165745856,race,NH White
+751,NA,0.507323568575233,race,NH Black
+757,NA,NA,race,NH Other

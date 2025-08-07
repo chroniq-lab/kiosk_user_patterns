@@ -14,7 +14,6 @@ saveRDS(pre_filtered,paste0(path_kiosk_user_patterns_folder,"/working/processed/
 
 
 combined_nhanes <- pre_filtered %>%
-  dplyr::filter(age >= 20,(pregnant %in% c(2,3) | is.na(pregnant))) %>%  
   dplyr::mutate(
     sbp = rowMeans(select(., systolic1, systolic2, systolic3), na.rm = TRUE),  # Calculate mean systolic blood pressure
     dbp = rowMeans(select(., diastolic1, diastolic2, diastolic3), na.rm = TRUE),  # Calculate mean diastolic blood pressure
@@ -43,6 +42,33 @@ combined_nhanes <- pre_filtered %>%
       is.na(smoke_currently) ~ 0,  # missing but has history → likely a smoker
       TRUE ~ 0
     ),
+    overweight = case_when(bmi >= 25 & bmi < 30 ~ 1,
+                           bmi <12 | bmi > 60 ~ NA_real_,
+                           !is.na(bmi) ~ 0,
+                           TRUE ~ NA_real_),
+    obesity = case_when(bmi >= 30 ~ 1,
+                           bmi <12 | bmi > 60 ~ NA_real_,
+                           !is.na(bmi) ~ 0,
+                           TRUE ~ NA_real_),
+    bmi_category = case_when(bmi <12 | bmi > 60 ~ NA_character_,
+                             bmi < 18.5 ~ "underweight",
+                             bmi < 25 ~ "normal",
+                             bmi < 30 ~ "overweight",
+                             bmi >= 30 ~ "obesity",
+                             TRUE ~ NA_character_
+                             ),
+    
+    age_group = case_when(age %in% c(18:44) ~ "18-44",
+                          age %in% c(45:64) ~ "45-64",
+                          age >= 64 ~ "65+",
+                          age < 18 ~ NA_character_),
+    
+    age_group_pursuant = case_when(age %in% c(18:19) ~ "18-19",
+                          age %in% c(20:44) ~ "20-44",
+                          age %in% c(45:64) ~ "45-64",
+                          age >= 64 ~ "65+",
+                          age < 18 ~ NA_character_),
+    
     female = gender - 1,
     race = factor(race,levels=c(1:5),labels=c("Hispanic","Hispanic","NH White","NH Black","NH Other")),
     insured_any = case_when(insured == 1 ~ 1,
@@ -51,9 +77,9 @@ combined_nhanes <- pre_filtered %>%
     dm_self_reported = case_when(dm_doc_told == 1 ~ 1,
                                 TRUE ~ 0)
   ) %>% 
-  dplyr::select(year, respondentid,weight, height, bmi, waistcircumference,
+  dplyr::select(year, respondentid,weight, height, bmi, bmi_category, pregnant, overweight, obesity, waistcircumference,
                 psu, pseudostratum, mec2yweight,
-                female, race, age, insured_any, dm_self_reported)
+                female, race, age,age_group,age_group_pursuant, insured_any, dm_self_reported)
 
 write_csv(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.csv"))
 saveRDS(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.RDS"))

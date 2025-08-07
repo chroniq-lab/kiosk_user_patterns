@@ -1,0 +1,7 @@
+cd /users/jvargh7/kinetic-t2d-hyperc3/code
+sbatch kuphyc301_survey_estimates.sh
+squeue --me
+scontrol show job 289912
+
+cat /users/jvargh7/output/kthyc301_289914.out
+/users/jvargh7/error/kthyc301_289914.err

@@ -51,7 +51,7 @@ stratified_estimates = map_dfr(c("age_group_pursuant","sex","raceeth","urban","s
                                    p_vars = c("overweight","obesity"),
                                    id_vars=v) %>% 
                                     mutate(Stratification = v) %>% 
-                                    dplyr::rename(strata = substitute(v))
+                                    dplyr::rename(strata = v)
                                  
                                  return(se_df)
                                  

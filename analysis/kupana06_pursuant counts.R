@@ -5,10 +5,27 @@ kupdat07 = open_dataset(paste0(path_kiosk_user_patterns_folder, "/working/proces
                                              format = "parquet", partitioning = c("year", "month")) %>% 
   dplyr::filter(age %in% c(18:99),year>=2024,!is.na(gender), !is.na(ethnicity_updated)) %>% 
   collect() %>% 
-  distinct(session_id_mask, .keep_all = TRUE) 
+  distinct(session_id_mask, .keep_all = TRUE) %>% 
+  mutate(normal = case_when(bmi >= 18.5 & bmi < 25 ~ 1,
+                                !is.na(bmi) ~ 0,
+                                TRUE ~ NA_real_),
+         underweight = case_when(bmi < 18.5 ~ 1,
+                            !is.na(bmi) ~ 0,
+                            TRUE ~ NA_real_))
 
 
-
+kupdat07 %>% 
+  summarize(n = n(),
+            weight = mean(weight_lbs*0.453592,na.rm=TRUE),
+            sd_weight = sd(weight_lbs*0.453592,na.rm=TRUE),
+            height = mean(height_inches*2.54,na.rm=TRUE),
+            sd_height = sd(height_inches*2.54,na.rm=TRUE),
+            underweight = mean(underweight),
+            normal = mean(normal),
+            overweight = mean(overweight),
+            obesity = mean(obesity)) %>%
+  mutate(stratification = "national") %>% 
+  mutate(strata = NA_character_)
 
 
 bind_rows(
