@@ -32,29 +32,46 @@ nhanes = read_csv("analysis/kupana10_nhanes national estimates.csv") %>%
   dplyr::select(variable, group, prevalence_95ci) %>% 
   rename(nhanes_prop = prevalence_95ci)
 
-cosmos = read_csv("data/kupdat08_cosmos state stratified estimates.csv") %>% 
-  dplyr::filter(State == "United States of America") %>% 
-  dplyr::select(Stratification,strata_new,NcountBMI) %>% 
-  group_by(Stratification) %>% 
-  mutate(prop = round(NcountBMI/sum(NcountBMI),3)*100) %>% 
-  ungroup() %>% 
-  dplyr::rename(cosmos_prop = prop) %>% 
-  dplyr::select(-NcountBMI) %>% 
-  mutate(variable = case_when(Stratification == "race_ethnicity" ~ "race",
+cosmos = read_csv("data/kupdat08_cosmos stratified.csv") %>% 
+  dplyr::filter(Stratification %in% c("age_group_pursuant","legalsex","raceeth","urban")) %>% 
+  
+  dplyr::select(Stratification,strata,strata2,n) %>% 
+  mutate(variable = case_when(Stratification == "raceeth" ~ "race",
                               Stratification == "legalsex" ~ "female",
                               TRUE ~ Stratification),
-         group = case_when(strata_new == "asian" ~ "NH Asian",
-                           strata_new == "other" ~ "NH Other",
-                           strata_new == "black" ~"NH Black",
-                           strata_new == "hispanic" ~ "Hispanic",
-                           strata_new == "white" ~ "NH White",
-                           Stratification == "legalsex" & strata_new == "female" ~ "1",
-                           Stratification == "legalsex" & strata_new == "male" ~ "0",
-                           Stratification == "legalsex" & strata_new == "unknown_sex" ~ NA_character_,
-                           Stratification == "urban" & strata_new == "urban" ~ "1",
-                           Stratification == "urban" & strata_new == "rural" ~ "0",
-                           TRUE ~ strata_new)) %>% 
-  dplyr::select(variable, group, cosmos_prop) 
+         group = case_when(strata == "Less than 18" ~ "<18",
+                           strata == "18 or more and less than 20" ~ "18-19",
+                           strata == "20 or more and less than 45" ~ "20-44",
+                           strata == "45 or more and less than 65" ~ "45-64",
+                           strata == "65 or more" ~ "65+",
+                           
+                           Stratification == "legalsex" & strata == "Female" ~ "1",
+                           Stratification == "legalsex" & strata == "Male" ~ "0",
+                           Stratification == "legalsex"  ~ "unknown_sex",
+                           
+                           
+                           Stratification == "raceeth" & strata2 == "Hispanic or Latino" ~ "Hispanic",
+                           Stratification == "raceeth" &  strata == "White" ~ "NH White",
+                           Stratification == "raceeth" & strata == "Black or African American" ~"NH Black",
+                           Stratification == "raceeth" & strata == "Asian" ~ "NH Asian",
+                           Stratification == "raceeth" & strata == "American Indian or Alaska Native" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "Native Hawaiian or Other Pacific Islander" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "Other Race" ~ "NH Other",
+                           Stratification == "raceeth" & strata == "None of the above" ~ "NH Other",
+                           
+                           Stratification == "urban" & strata == "10 Rural areas" ~ "0",
+                           Stratification == "urban" & strata == "None of the above" ~ "unknown_urban",
+                           Stratification == "urban" ~ "1",
+                           TRUE ~ strata)) %>% 
+  group_by(variable,group) %>% 
+  summarize(group_total = sum(n)) %>% 
+  ungroup() %>% 
+  dplyr::filter(!is.na(group_total)) %>% 
+  group_by(variable) %>% 
+  mutate(cosmos_prop = group_total/sum(group_total)) %>% 
+  ungroup() %>% 
+  dplyr::select(variable, group, cosmos_prop) %>% 
+  mutate(cosmos_prop = round(cosmos_prop*100,1))
 
 pursuant = read_csv("analysis/kupana06_pursuant counts.csv")  %>% 
   dplyr::select(stratification,strata,n) %>% 
@@ -86,7 +103,7 @@ pursuant = read_csv("analysis/kupana06_pursuant counts.csv")  %>%
 
 table_df = nhanes %>% 
   full_join(brfss,
-            by=c("variable","group")) %>% 
+            by=c("variable","group")) %>%
   full_join(cosmos,
             by=c("variable","group")) %>% 
   full_join(pursuant,
@@ -94,3 +111,16 @@ table_df = nhanes %>%
 
 
 write_csv(table_df,"paper/table_demographic_characteristics.csv")
+
+
+cosmos = data_frame(wt_mean = 188,
+                    wt_var = 23870,
+                    bmi_mean = 30.5,
+                    bmi_var = 18914,
+                    ht_mean = 67,
+                    ht_var = 32) %>% 
+  mutate(wt_mean = 188*0.453592,
+         wt_sd = sqrt(wt_var)*0.453592,
+         ht_mean = 67*2.54,
+         ht_sd = sqrt(ht_var)*2.54)
+

@@ -13,6 +13,9 @@ kupdat07 = open_dataset(paste0(path_kiosk_user_patterns_folder, "/working/proces
                             !is.na(bmi) ~ 0,
                             TRUE ~ NA_real_))
 
+mean(kupdat07$bmi)
+sd(kupdat07$bmi)
+
 
 kupdat07 %>% 
   summarize(n = n(),

@@ -2,7 +2,8 @@ library(sf)
 library(RColorBrewer)
 plot_map_estimates_categorical <- function(df,level="state",plot_var = "mean",fips_var=NA,
                                plot_var_label = "Prevalence (%)", palette = "YlGnBu",
-                               breaks=c(0,15,30,35,40,45,50,55,85)){
+                               breaks=c(0,15,30,35,40,45,50,55,85), boundary_col = "grey80"
+){
   
   
   categories = length(breaks)-1
@@ -52,7 +53,6 @@ plot_map_estimates_categorical <- function(df,level="state",plot_var = "mean",fi
   }
   
   # Create ggplot object 
-  boundary_col = "grey80"
   plt <- ggplot() +
     # https://stackoverflow.com/questions/33765710/force-ggplot-legend-to-show-all-categories-when-no-values-are-present
     geom_sf(data=boundaries,col=boundary_col,aes_string(fill=paste0("var_category")),show.legend=TRUE)  +

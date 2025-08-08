@@ -39,22 +39,22 @@ source("functions/plot_map_estimates_categorical.R")
 
 figure1_theme = theme(legend.key.width = unit(3, "cm"))
 
-fig1a = plot_map_estimates_categorical(fig_df,level="state",plot_var = "brfss_ow",fips_var = "state_fips",plot_var_label="") + 
+fig1a = plot_map_estimates_categorical(fig_df,level="state",plot_var = "brfss_ow",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
-fig1b = plot_map_estimates_categorical(fig_df,level="state",plot_var = "cosmos_ow",fips_var = "state_fips",plot_var_label="") + 
+fig1b = plot_map_estimates_categorical(fig_df,level="state",plot_var = "cosmos_ow",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
-fig1c = plot_map_estimates_categorical(fig_df,level="state",plot_var = "pursuant_ow",fips_var = "state_fips",plot_var_label="") + 
+fig1c = plot_map_estimates_categorical(fig_df,level="state",plot_var = "pursuant_ow",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
-fig1d = plot_map_estimates_categorical(fig_df,level="state",plot_var = "brfss_ob",fips_var = "state_fips",plot_var_label="") + 
+fig1d = plot_map_estimates_categorical(fig_df,level="state",plot_var = "brfss_ob",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
-fig1e = plot_map_estimates_categorical(fig_df,level="state",plot_var = "cosmos_ob",fips_var = "state_fips",plot_var_label="") + 
+fig1e = plot_map_estimates_categorical(fig_df,level="state",plot_var = "cosmos_ob",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
-fig1f = plot_map_estimates_categorical(fig_df,level="state",plot_var = "pursuant_ob",fips_var = "state_fips",plot_var_label="") + 
+fig1f = plot_map_estimates_categorical(fig_df,level="state",plot_var = "pursuant_ob",fips_var = "state_fips",plot_var_label="",boundary_col = "black") + 
   figure1_theme
 
 
