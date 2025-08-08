@@ -1,29 +1,31 @@
-# Kiosk User Patterns, 2024-2025
+# National, state, and county estimates of adult overweight and obesity from electronic health records and kiosks in retail locations, 2024-2025
 
+## ABSTRACT
+### Importance
 
-## Getting started with this repository
+High body mass index (BMI) is a leading cause of morbidity and mortality from non-communicable diseases and increases susceptibility to infectious diseases. Inadequate subnational geographical resolution, low response rates (23-45%), and lag of 2-3 years requires the evaluation of alternative data sources for monitoring the burden of high BMI.
 
-### Software
-0. Download and install [VSCode](https://code.visualstudio.com/) and [RStudio](https://posit.co/download/rstudio-desktop/)
-1. Install the Python, Pylance, and Python Debugger extensions. Also install the R and R Syntax extensions.This can be done using the 'Extensions' button on the navigation bar on the left.   
-2. Install GitHub copilot and GitHub copilot Chat extensions.     
-3. Clone the repository using instructions on Slack. Go to **#team** >> **Git and GitHub Setup** page. Please follow the instructions carefully. Do remember to clone the repository on a local folder.     
-4. Go to 'File' and open the folder **kiosk_user_patterns** from where you have cloned it. The folder should have some sub-folders and files. 
+### Objective
 
+To describe the prevalence of overweight and obesity among individuals aged 18 years and older using electronic health records and kiosks in retail locations.
 
-### Initial Check: getting_started.ipynb
-1. Open getting_started.ipynb
-2. Execute the different cells 
-3. The first cell will install packages on your system, while the second cell will print your username. The username is the same as your account on your OS (e.g., mine is JVARGH7).
+### Design
+Cross-sectional analysis, January 2024-July 2025
 
-### Updating config.py
-1. Copy the block of code from Line 6 onwards and update with the path to your folders. If you are using MacOS, you can find the folder path in one of several ways. See this [discussion](https://apple.stackexchange.com/questions/317992/is-there-any-way-to-get-the-path-of-a-folder-in-macos) here. If you are using Windows, see this [post](https://www.wikihow.com/Find-a-File%27s-Path-on-Windows) or click on the Address bar, and copy the path. See my example.    
+### Setting
+3,144 counties from 50 states and District of Columbia
 
+### Participants
+85 million patients from Epic Cosmos and 1.2 million users of Pursuant Health kiosks
 
-### Testing the paths
-1. Go to data/kupdat01_exploring datasets.ipynb. This is a Jupyter notebook (similar to getting_started.ipynb) and is one of the most intuitive ways of running code. Setting it up may be a little intimidating at first, but it gets easier over time.    
-2. What it does is to display the first 10 rows of the datasets stored as .parquet files. Parquet files are data structures that allow for efficient querying of large datasets. You can read more about them here:
-    - https://www.youtube.com/watch?v=Yxeic7WXzFw --> Watch before starting
-    - https://www.youtube.com/watch?v=O42LUmJZPx0 ---> Watch before starting
-    - https://hbs-rcs.github.io/large_data_in_R/ --> Difference between traditional R data storage and processing, and large data storage and processing
-    - https://duckdb.org/2024/04/02/duckplyr.html --> Read if you need to go beyond parquet
+### Exposures
+National, state, and county of residence; age, gender, race and ethnicity, urban vs rural residence
+
+### Main Outcomes and Measures
+Overweight (BMI: 25-29.9 kg/m2) or obesity (BMI ≥30 kg/m2) were defined using height (Epic Cosmos: measured, kiosks: self-reported) and measured weight based on World Health Organization cutoffs. Prevalence was estimated directly for Epic Cosmos and using multilevel regression & post-stratification based on socio-demographic variables for kiosks. We compared these estimates with those from the National Health and Nutrition Examination Survey (NHANES) and Behavioral Risk Factor Surveillance System (BRFSS). Modeled county estimates were compared to PLACES 2024 small area estimates,  based on BRFSS 2022, using Local Moran’s I and Spearman rank correlations.
+
+### Results
+The analytic sample was 32.3 % aged 45 to 64 years, 30.9% aged 65 years and older, 55.8% women and 2.6% rural for Epic Cosmos. The analytic samples were 35.8% aged 45 to 64 years, 25.2% aged 65 years and older, 43.7% women and 18.2% rural for kiosks. The prevalence of overweight was 39.1% and 33.6%, and obesity was 43.7% and 43.3% in Epic Cosmos and kiosks respectively, and similar to NHANES and BRFSS. Higher prevalence was observed among NH Black adults, those aged 45 to 64 years, and rural residents for both Epic Cosmos and kiosks. County hotspots were observed across Southern and Midwestern states, and were correlated with PLACES (Cosmos = 0.64, kiosks: 0.34).
+
+### Conclusions and Relevance
+In this administrative EHR and convenience kiosk samples of US adults, prevalence of overweight and obesity were high. National surveys mask substantial subnational variations in prevalence of high BMI.
