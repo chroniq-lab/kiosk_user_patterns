@@ -1,13 +1,13 @@
 
-cosmos = read_csv("data/kupdat08_cosmos counties.csv") %>% 
+cosmos = read_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat08_cosmos counties.csv")) %>% 
   distinct(fips,.keep_all=TRUE) %>% 
   rename(Obesity = bmi_ge30,
          Overweight = bmi_25to30)
 
-places = read_csv("data/kupdat09_places county estimates.csv") %>% 
+places = read_csv(paste0(path_kiosk_user_patterns_repo,"/data/kupdat09_places county estimates.csv")) %>% 
   mutate(obesity_se = (obesity - obesity_lci)/1.96)
 
-pursuant = read_csv("analysis/kupana05_pursuant model estimates.csv") %>% 
+pursuant = read_csv(paste0(path_kiosk_user_patterns_repo,"/analysis/kupana05_pursuant model estimates.csv")) %>% 
   dplyr::filter(year == "2024-2025") %>% 
   dplyr::select(stratification, strata, measure,prevalence) %>% 
   pivot_wider(names_from="measure",values_from=prevalence) %>% 
@@ -15,7 +15,7 @@ pursuant = read_csv("analysis/kupana05_pursuant model estimates.csv") %>%
          Obesity = Obesity*100)
 
 
-pursuant_se = read_csv("analysis/kupana05_pursuant model estimates.csv") %>% 
+pursuant_se = read_csv(paste0(path_kiosk_user_patterns_repo,"/analysis/kupana05_pursuant model estimates.csv")) %>% 
   dplyr::filter(year == "2024-2025") %>% 
   mutate(se = (prevalence - prevalence_lci)/1.96) %>% 
   dplyr::select(stratification, strata, measure,se) %>% 

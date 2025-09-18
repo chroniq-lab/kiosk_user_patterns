@@ -49,4 +49,38 @@ with(df,table(places_ob_quad_median,pursuant_ob_quad_median)) %>%
 
 
 
+# FIGURES --------------------
+
+source("functions/plot_map_moran.R")  
+
+figure1_theme = theme(legend.key.width = unit(3, "cm"))
+
+
+
+fig1a = plot_map_moran(df,level="county",plot_var = "pursuant_ow_quad_median",fips_var = "fips",plot_var_label="",boundary_col = "black") + 
+  figure1_theme
+
+fig1b = plot_map_moran(df,level="county",plot_var = "cosmos_ow_quad_median",fips_var = "fips",plot_var_label="",boundary_col = "black") + 
+  figure1_theme
+
+fig1c = plot_map_moran(df,level="county",plot_var = "pursuant_ob_quad_median",fips_var = "fips",plot_var_label="",boundary_col = "black") + 
+  figure1_theme
+
+
+
+fig1d = plot_map_moran(df,level="county",plot_var = "cosmos_ob_quad_median",fips_var = "fips",plot_var_label="",boundary_col = "black") + 
+  figure1_theme
+
+
+fig1e = plot_map_moran(df,level="county",plot_var = "places_ob_quad_median",fips_var = "fips",plot_var_label="",boundary_col = "black") + 
+  figure1_theme
+
+library(ggpubr)
+ggarrange(fig1a,fig1b,NULL,fig1c,fig1d,fig1e,
+          labels=c("A","B","","C","D","E"),
+          nrow = 2,ncol=3,
+          common.legend = TRUE,
+          legend = "bottom") %>% 
+  ggsave(.,filename=paste0(path_kiosk_user_patterns_folder,"/figures/moran for overweight and obesity.jpg"),
+         width = 12,height = 8)
 

@@ -22,6 +22,14 @@ moran(boundaries$cosmos_ob, nbw, length(nb), Szero(nbw),  NAOK = TRUE)[1]
 moran(boundaries$pursuant_ob, nbw, length(nb), Szero(nbw),  NAOK = TRUE)[1]
 
 
+moran.test(boundaries$places_ob, nbw)
+moran.test(boundaries$cosmos_ow, nbw,na.action = na.omit)
+moran.test(boundaries$pursuant_ow, nbw,na.action = na.omit)
+moran.test(boundaries$cosmos_ob, nbw,na.action = na.omit)
+moran.test(boundaries$pursuant_ob, nbw,na.action = na.omit)
+
+
+
 # First remove NA values from the dataset before computing Moran's I
 # Create a vector of valid indices for cosmos_ob (non-NA values)
 valid_indices_cosmos_ob <- which(!is.na(boundaries$cosmos_ob))
