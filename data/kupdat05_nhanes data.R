@@ -71,6 +71,7 @@ combined_nhanes <- pre_filtered %>%
     
     female = gender - 1,
     race = factor(race,levels=c(1:5),labels=c("Hispanic","Hispanic","NH White","NH Black","NH Other")),
+    race3 = factor(race3,levels=c(1,2,3,4,6,7),labels=c("Hispanic","Hispanic","NH White","NH Black","NH Asian","NH Other")),
     insured_any = case_when(insured == 1 ~ 1,
                         insured == 2 ~ 0,
                         TRUE ~ NA_real_),
@@ -79,12 +80,11 @@ combined_nhanes <- pre_filtered %>%
   ) %>% 
   dplyr::select(year, respondentid,weight, height, bmi, bmi_category, pregnant, overweight, obesity, waistcircumference,
                 psu, pseudostratum, mec2yweight,
-                female, race, age,age_group,age_group_pursuant, insured_any, dm_self_reported)
+                female, race,race3, age,age_group,age_group_pursuant, insured_any, dm_self_reported)
 
 write_csv(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.csv"))
 saveRDS(combined_nhanes,paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.RDS"))
 
 combined_nhanes = readRDS(paste0(path_kiosk_user_patterns_folder,"/working/processed/kupdat05_nhanes data.RDS"))
 
-table(combined_nhanes$race
-      )
+table(combined_nhanes$race3)

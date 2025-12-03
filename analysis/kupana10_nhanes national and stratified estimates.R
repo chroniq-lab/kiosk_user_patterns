@@ -23,7 +23,7 @@ national_estimates = svysummary(
   c_vars = c("height","weight","bmi"),
   p_vars = c("dm_self_reported"),
   g_vars=c("age_group_pursuant","female","age_group",
-           "race","bmi_category"))
+           "race","race3","bmi_category"))
 
 write_csv(national_estimates,"analysis/kupana10_nhanes national estimates.csv")
 
@@ -33,7 +33,7 @@ write_csv(national_estimates,"analysis/kupana10_nhanes national estimates.csv")
 # STRATIFIED ESTIMATES ----------------
 # "urban",,"state_names"
 
-stratified_estimates = map_dfr(c("age_group_pursuant","female","race"),
+stratified_estimates = map_dfr(c("age_group_pursuant","female","race3"),
                                
                                function(v){
                                  print(v)

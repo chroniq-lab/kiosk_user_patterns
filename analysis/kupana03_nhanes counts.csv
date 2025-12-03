@@ -9,4 +9,5 @@ n,overweight,obesity,stratification,strata
 1066,NA,0.4277673545966229,race,Hispanic
 3620,NA,0.40193370165745856,race,NH White
 751,NA,0.507323568575233,race,NH Black
-757,NA,NA,race,NH Other
+348,0.3045977011494253,0.13793103448275862,race,NH Asian
+409,NA,NA,race,NH Other

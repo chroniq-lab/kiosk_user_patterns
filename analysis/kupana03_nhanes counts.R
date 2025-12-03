@@ -6,10 +6,10 @@ nhanes_20212023 = readRDS(paste0(path_kiosk_user_patterns_folder,"/working/proce
   dplyr::filter(year == "20212023")
 
 nhanes_20212023_analytic = nhanes_20212023 %>% 
-  srvyr::filter(age >= 18,(pregnant %in% c(2,3) | is.na(pregnant))) %>%
-  srvyr::filter(!is.na(bmi))
+  dplyr::filter(age >= 18,(pregnant %in% c(2,3) | is.na(pregnant))) %>%
+  dplyr::filter(!is.na(bmi))
 
-c("age_group_pursuant","female","race")
+c("age_group_pursuant","female","race3")
 
 
 bind_rows(
@@ -19,6 +19,7 @@ bind_rows(
               obesity = mean(obesity)) %>%
     mutate(stratification = "national") %>% 
     mutate(strata = NA_character_),
+  
   nhanes_20212023_analytic %>% 
     mutate(female = as.character(female)) %>% 
     group_by(female) %>% 
@@ -39,10 +40,10 @@ bind_rows(
   
   
   nhanes_20212023_analytic %>% 
-    group_by(race) %>% 
+    group_by(race3) %>% 
     summarize(n = n(),
               overweight = mean(overweight),
               obesity = mean(obesity)) %>%
     mutate(stratification = "race") %>% 
-    rename(strata = race)) %>% 
+    rename(strata = race3)) %>% 
   write_csv("analysis/kupana03_nhanes counts.csv")

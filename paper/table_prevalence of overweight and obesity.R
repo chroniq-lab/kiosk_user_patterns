@@ -5,6 +5,9 @@ kupana10 = read_csv("analysis/kupana10_nhanes stratified estimates of overweight
   mutate(prevalence_95ci = paste0(round(estimate,2), " (",round(lci,2),", ",round(uci,2),")")) %>%
   dplyr::select(Stratification, strata, variable, prevalence_95ci) %>% 
   pivot_wider(names_from=variable,values_from=prevalence_95ci) %>% 
+  dplyr::filter(Stratification != "race") %>% 
+  mutate(Stratification = case_when(Stratification == "race3" ~ "race",
+                                    TRUE ~ Stratification)) %>% 
   left_join(read_csv("analysis/kupana03_nhanes counts.csv") %>% 
               dplyr::select(stratification,strata,n) %>% 
               rename(nhanes_n = n),
